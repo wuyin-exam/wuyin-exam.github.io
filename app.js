@@ -41,8 +41,9 @@ function preloadGallery(gallery, priority = 'auto', selectedImage) {
   const images = [...track.querySelectorAll('img')];
   const index = Math.max(0, Math.min(images.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
   const current = selectedImage ?? images[index];
+  const currentReady = current.complete && current.naturalWidth > 0;
   images.forEach(image => {
-    image.fetchPriority = gallery === activeGallery ? (image === current ? 'high' : 'auto') : priority;
+    image.fetchPriority = gallery === activeGallery ? (image === current || currentReady ? 'high' : 'auto') : priority;
     image.loading = 'eager';
   });
 }
@@ -58,7 +59,12 @@ const galleryObserver = new IntersectionObserver(entries => {
     galleryObserver.unobserve(entry.target);
   });
 }, { rootMargin: '600px 0px' });
-document.querySelectorAll('.gallery').forEach(gallery => galleryObserver.observe(gallery));
+document.querySelectorAll('.gallery').forEach(gallery => {
+  gallery.querySelector('img').addEventListener('load', () => {
+    if (gallery === activeGallery) preloadGallery(gallery, 'high');
+  });
+  galleryObserver.observe(gallery);
+});
 
 function openGuideTarget(hash) {
   const target = document.getElementById(hash.slice(1));
