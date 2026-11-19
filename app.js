@@ -30,21 +30,25 @@ window.matchMedia('(min-width: 761px)').addEventListener('change', event => {
 
 let activeGallery;
 
-function preloadGallery(gallery, priority = 'auto') {
+function preloadGallery(gallery, priority = 'auto', selectedImage) {
   if (priority === 'high') {
     activeGallery = gallery;
     document.querySelectorAll('.gallery img').forEach(image => {
       if (!gallery.contains(image)) image.fetchPriority = 'low';
     });
   }
-  gallery.querySelectorAll('img').forEach(image => {
-    image.fetchPriority = gallery === activeGallery ? 'high' : priority;
+  const track = gallery.querySelector('.gallery-track');
+  const images = [...track.querySelectorAll('img')];
+  const index = Math.max(0, Math.min(images.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+  const current = selectedImage ?? images[index];
+  images.forEach(image => {
+    image.fetchPriority = gallery === activeGallery ? (image === current ? 'high' : 'auto') : priority;
     image.loading = 'eager';
   });
 }
 
 function loadGuideImage(image) {
-  preloadGallery(image.closest('.gallery'), 'high');
+  preloadGallery(image.closest('.gallery'), 'high', image);
 }
 
 const galleryObserver = new IntersectionObserver(entries => {
