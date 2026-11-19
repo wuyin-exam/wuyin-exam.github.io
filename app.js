@@ -28,25 +28,34 @@ window.matchMedia('(min-width: 761px)').addEventListener('change', event => {
   if (event.matches) closeMenu();
 });
 
-function loadGuideImage(image, priority = 'high') {
-  if (priority === 'high') {
-    document.querySelectorAll('.gallery img[fetchpriority="high"]').forEach(other => {
-      if (other !== image) other.fetchPriority = 'auto';
-    });
-  }
-  image.fetchPriority = priority;
-  image.loading = 'eager';
-}
+let activeGallery;
 
 function preloadGallery(gallery, priority = 'auto') {
-  const track = gallery.querySelector('.gallery-track');
-  const images = [...track.querySelectorAll('img')];
-  const index = Math.max(0, Math.min(images.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
-  loadGuideImage(images[index], priority);
-  images.forEach((image, imageIndex) => {
-    if (imageIndex !== index) loadGuideImage(image, 'low');
+  if (priority === 'high') {
+    activeGallery = gallery;
+    document.querySelectorAll('.gallery img').forEach(image => {
+      if (!gallery.contains(image)) image.fetchPriority = 'low';
+    });
+  }
+  gallery.querySelectorAll('img').forEach(image => {
+    image.fetchPriority = gallery === activeGallery ? 'high' : priority;
+    image.loading = 'eager';
   });
 }
+
+function loadGuideImage(image) {
+  preloadGallery(image.closest('.gallery'), 'high');
+}
+
+// Read ahead one image at a time while the visitor reads the current section.
+window.addEventListener('load', async () => {
+  for (const image of document.querySelectorAll('.gallery img')) {
+    if (image.complete && image.naturalWidth > 0) continue;
+    if (image.closest('.gallery') !== activeGallery) image.fetchPriority = 'low';
+    image.loading = 'eager';
+    await image.decode();
+  }
+}, { once: true });
 
 const galleryObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -81,6 +90,11 @@ function updateActiveLink() {
   navTargets.forEach((section, index) => {
     if (section.getBoundingClientRect().top <= 115) activeIndex = index;
   });
+  const gallery = navTargets[activeIndex]?.querySelector('.gallery');
+  if (gallery && gallery !== activeGallery) {
+    preloadGallery(gallery, 'high');
+    galleryObserver.unobserve(gallery);
+  }
   navLinks.forEach((link, index) => {
     link.classList.toggle('active', index === activeIndex);
     if (index === activeIndex) link.setAttribute('aria-current', 'location');
@@ -172,7 +186,7 @@ document.querySelectorAll('.image-button').forEach(button => {
   button.addEventListener('click', () => {
     const image = button.querySelector('img');
     loadGuideImage(image);
-    enlargedImage.src = image.src;
+    enlargedImage.src = image.dataset.zoom;
     enlargedImage.alt = image.alt;
     imageCaption.textContent = image.alt;
     originalImage.href = button.dataset.original;

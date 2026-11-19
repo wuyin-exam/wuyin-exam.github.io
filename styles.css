@@ -10,7 +10,7 @@
   --font: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+html { scroll-behavior: auto; scroll-padding-top: 88px; }
 body { margin: 0; background: #f4f6f9; color: var(--ink); font: 400 15px/1.65 var(--font); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button { color: inherit; font: inherit; cursor: pointer; }
@@ -100,7 +100,7 @@ svg.icon { display: inline-block; flex-shrink: 0; width: 20px; height: 20px; fil
 .gallery-track { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: #c2afdF #f1edf7; }
 .gallery-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
 .image-button { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #f7f5fc; cursor: zoom-in; }
-.image-button > img { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; }
+.image-button > img { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; object-fit: cover; }
 .image-button::after { content: "点击放大"; position: absolute; right: 10px; bottom: 9px; padding: 3px 8px; border-radius: 4px; background: #30213dd4; color: white; font-size: 11px; opacity: 0; }
 .image-button:hover::after, .image-button:focus-visible::after { opacity: 1; }
 .gallery-controls { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 7px 10px; border-top: 1px solid #e4dfed; background: #fff; }
