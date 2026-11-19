@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6135e8">
+  <meta name="description" content="按需要查找数据中心的登录、订阅、员工授权、手机查看、数据查询和导出操作。">
+  <title>数据中心操作指南 · 多客</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2040%2040'%3E%3Crect%20width='40'%20height='40'%20rx='12'%20fill='%236135e8'/%3E%3Cpath%20d='M11%2025V19M20%2025V11M29%2025V16'%20stroke='white'%20stroke-width='4'%20stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+@charset "UTF-8";
+:root {
+  --purple: #6334df;
+  --purple-soft: #f0eaff;
+  --ink: #242938;
+  --muted: #626b7b;
+  --line: #dce1ea;
+  --header: 68px;
+  --sidebar: 216px;
+  --font: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body { margin: 0; background: #f4f6f9; color: var(--ink); font: 400 15px/1.65 var(--font); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { color: inherit; font: inherit; cursor: pointer; }
+a, button { -webkit-tap-highlight-color: transparent; }
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 3px solid #9875ec; outline-offset: 3px; }
+h1, h2, h3, p, figure { margin: 0; }
+svg.icon { display: inline-block; flex-shrink: 0; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+.icon-library { position: absolute; width: 0; height: 0; overflow: hidden; }
+.skip-link { position: fixed; z-index: 100; top: -80px; left: 16px; padding: 10px 18px; background: var(--purple); color: white; border-radius: 8px; }
+.skip-link:focus { top: 10px; }
+.header { position: fixed; inset: 0 0 auto; z-index: 30; height: var(--header); display: flex; align-items: center; gap: 22px; padding: 0 28px 0 22px; border-bottom: 1px solid var(--line); background: #fff; }
+.brand { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: #fff; background: var(--purple); }
+.brand-mark svg { width: 28px; height: 28px; }
+.brand-name { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 700; }
+.brand-name > span { font-size: 14px; font-weight: 600; }
+.header-divider { height: 22px; border-left: 1px solid var(--line); }
+.header-label { font-size: 13px; color: var(--muted); }
+.header-links { height: 100%; display: flex; align-items: center; gap: 28px; margin-left: auto; font-size: 14px; }
+.header-links > a { position: relative; height: 100%; display: flex; align-items: center; gap: 6px; }
+.header-links > a:hover, .header-links .current { color: var(--purple); }
+.header-links .current { font-weight: 600; }
+.header-links .current::after { content: ""; position: absolute; inset: auto 0 0; height: 3px; background: var(--purple); }
+.header-links .backend-link { height: 34px; padding: 0 12px; border: 1px solid #e0d5f7; border-radius: 7px; background: #f7f3ff; color: var(--purple); font-size: 13px; }
+.backend-link .icon { width: 14px; height: 14px; }
+.menu-button { display: none; padding: 10px; border: 0; background: none; }
+.menu-button span { display: block; width: 20px; height: 2px; margin: 4px 0; background: var(--ink); }
+.sidebar { position: fixed; inset: var(--header) auto 0 0; z-index: 25; width: var(--sidebar); padding: 20px 12px; overflow-y: auto; border-right: 1px solid var(--line); background: #fff; scrollbar-width: thin; }
+.sidebar-home { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 7px; font-size: 14px; font-weight: 600; }
+.sidebar-home.active, .sidebar nav a.active { background: var(--purple-soft); color: var(--purple); }
+.sidebar nav a { display: flex; align-items: center; gap: 9px; padding: 8px 10px; margin: 2px 0; border-radius: 6px; color: #4e5769; font-size: 13px; line-height: 1.5; }
+.sidebar nav a:hover { background: #f6f2fd; color: var(--purple); }
+.sidebar nav a.active { font-weight: 600; }
+.sidebar nav a > span { min-width: 16px; color: #7c8291; font-size: 11px; font-variant-numeric: tabular-nums; }
+.sidebar nav a.active > span { color: var(--purple); }
+.sidebar nav a > .icon { width: 16px; height: 16px; }
+.nav-label { margin: 21px 10px 7px; color: #6d7383; font-size: 11px; font-weight: 600; }
+.sidebar-tip { margin: 24px 2px 0; padding: 13px; border: 1px solid #e1d8f5; border-radius: 8px; background: #f8f5ff; font-size: 12px; }
+.sidebar-tip strong { font-weight: 600; }
+.tip-dot { display: inline-block; width: 6px; height: 6px; margin: 0 6px 2px 0; border-radius: 50%; background: var(--purple); }
+.sidebar-tip > a { margin-top: 8px; display: flex; justify-content: space-between; color: var(--purple); }
+.sidebar-footer { margin-top: 20px; text-align: center; font-size: 10px; color: #747c8b; }
+.sidebar-backdrop { display: none; }
+.main { margin: var(--header) 0 0 var(--sidebar); }
+.content { max-width: 1320px; margin: 0 auto; padding: 23px 30px 0; }
+.breadcrumb { display: flex; gap: 10px; margin-bottom: 17px; color: #687184; font-size: 12px; }
+.breadcrumb > span { color: #9ca4b1; }
+.breadcrumb strong { font-weight: 500; }
+.hero { padding: 13px 18px; margin-bottom: 12px; border: 1px solid #dfd4f5; border-radius: 9px; background: #f4effc; }
+.hero h1 { margin: 0; color: #2d2341; font-size: 24px; font-weight: 600; line-height: 1.4; }
+.goals { padding: 10px 12px 0; border: 1px solid #4e23b7; border-radius: 10px; background: linear-gradient(110deg, #6536da, #4920ad); }
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.section-heading h2 { color: #fff; font-size: 18px; font-weight: 600; line-height: 1.4; }
+.goal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.goal-card { display: flex; align-items: center; justify-content: flex-start; gap: 7px; min-height: 42px; padding: 7px 10px; border: 1px solid #ffffffa6; border-radius: 6px; background: #fff; color: #35224d; transition: background .15s; }
+.goal-card:hover { background: #eee5ff; }
+.goals a:focus-visible { outline-color: #fff; }
+.goals .goal-icon { width: 22px; height: 22px; border-radius: 5px; }
+.goals .goal-icon .icon { width: 15px; height: 15px; }
+.goal-icon { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 7px; }
+.goal-icon .icon { width: 17px; height: 17px; }
+.violet { background: #ece3ff; color: #7942d8; }
+.blue { background: #e7effc; color: #3d70bd; }
+.green { background: #e3f3ec; color: #338967; }
+.orange { background: #fff0df; color: #b57234; }
+.goal-card h3 { margin-bottom: 0; font-size: 14px; font-weight: 600; line-height: 1.5; }
+.more-goals { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 16px; margin-top: 7px; padding: 6px 0; border-top: 1px solid #ffffff35; font-size: 12px; color: #fff; }
+.more-goals > span { color: #e6dcff; }
+.more-goals a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.more-goals a span { margin-left: 3px; }
+.help-strip { display: flex; align-items: center; gap: 11px; margin: 14px 0 21px; padding: 12px 16px; border: 1px solid #dce1ea; border-radius: 9px; background: #fff; }
+.help-strip-icon { display: flex; color: var(--purple); }
+.help-strip strong { display: block; color: #465064; font-size: 13px; font-weight: 600; }
+.help-strip-link { display: flex; align-items: center; gap: 7px; margin-left: auto; color: var(--purple); white-space: nowrap; font-size: 12px; }
+.help-strip-link .icon { width: 15px; height: 15px; }
+.guide-divider { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 12px; color: #606b7e; font-size: 12px; }
+.guide-divider > span:first-child { color: #3a4355; font-size: 16px; font-weight: 600; }
+.guide-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 12px; margin-bottom: 12px; }
+.guide-grid > .guide-section { min-width: 0; margin-bottom: 0; }
+.guide-section { margin-bottom: 12px; overflow: clip; border: 1px solid #d5dbe6; border-radius: 11px; background: #fff; box-shadow: 0 2px 4px #1e2a4005; }
+.article-top { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 9px 16px; border-top: 3px solid var(--purple); border-bottom: 1px solid #e3deed; background: #f8f6fc; }
+.article-top h2 { color: #292139; font-size: 18px; font-weight: 600; line-height: 1.45; }
+.back-goals { margin-left: auto; color: #6e5b88; font-size: 12px; white-space: nowrap; }
+.back-goals:hover { color: var(--purple); }
+.article-intro { margin-bottom: 7px; color: #4b5567; font-size: 14px; line-height: 1.7; }
+.gallery { width: 100%; min-width: 0; margin: 0; overflow: hidden; background: #fff; }
+.gallery-track { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: #c2afdF #f1edf7; }
+.gallery-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.image-button { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #f7f5fc; cursor: zoom-in; }
+.image-button > img { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; }
+.image-button::after { content: "点击放大"; position: absolute; right: 10px; bottom: 9px; padding: 3px 8px; border-radius: 4px; background: #30213dd4; color: white; font-size: 11px; opacity: 0; }
+.image-button:hover::after, .image-button:focus-visible::after { opacity: 1; }
+.gallery-controls { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 7px 10px; border-top: 1px solid #e4dfed; background: #fff; }
+.gallery-controls button { display: grid; place-items: center; flex-shrink: 0; width: 29px; height: 27px; border: 1px solid #d4c6e9; border-radius: 6px; background: #f7f3ff; color: var(--purple); }
+.gallery-controls button:hover:not(:disabled) { border-color: var(--purple); background: #eee5ff; }
+.gallery-controls button:disabled { border-color: #e4e6ec; background: #fafafb; color: #b4bac5; cursor: default; }
+.gallery-controls .icon { width: 16px; height: 16px; }
+.gallery-prev .icon { transform: rotate(180deg); }
+.gallery-status { color: #534366; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.gallery-hint { padding: 3px 10px; border-radius: 5px; background: #eee6ff; color: #5427b5; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.guide-section > .article-intro { margin: 9px 16px; }
+.faq-list { margin: 0 16px 10px; }
+.faq-list > details { border-bottom: 1px solid #e3e7ef; }
+.faq-list summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; list-style: none; color: #3d4658; font-size: 14px; cursor: pointer; }
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary > span { color: #827393; font-size: 18px; }
+.faq-list details[open] summary { color: var(--purple); padding-bottom: 7px; }
+.faq-list details[open] summary > span { transform: rotate(45deg); }
+.faq-list details > div { padding: 0 18px 15px 0; color: #515d70; font-size: 14px; line-height: 1.8; }
+.faq-list details > div > a { display: inline-block; margin-top: 6px; color: var(--purple); font-size: 13px; }
+.page-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0 28px; color: #697385; font-size: 11px; }
+.footer-brand { display: flex; align-items: center; gap: 10px; color: #6b4a8c; font-size: 14px; font-weight: 600; }
+.footer-brand > span { color: #697385; font-size: 11px; font-weight: 400; }
+.page-footer > a:last-child { color: #76588e; }
+.back-top { position: fixed; right: 18px; bottom: 20px; z-index: 20; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #d5c8e9; border-radius: 8px; background: #fff; color: #805fa8; box-shadow: 0 2px 10px #35223b0c; }
+.back-top .icon { width: 17px; height: 17px; }
+.image-dialog { width: min(1390px, 95vw); max-width: none; max-height: 94dvh; padding: 0; overflow: hidden; border: 1px solid #e5dcec; border-radius: 12px; background: #faf8fd; color: var(--ink); box-shadow: 0 20px 70px #21152c40; }
+.image-dialog[open] { display: flex; flex-direction: column; }
+.image-dialog::backdrop { background: #20182bc7; backdrop-filter: blur(4px); }
+.dialog-bar { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-shrink: 0; padding: 11px 15px; border-bottom: 1px solid #e2d9ed; background: #fff; font-size: 13px; }
+.dialog-bar > p { min-width: 0; }
+.dialog-bar > div { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+.dialog-bar a { color: #765293; font-size: 12px; }
+.dialog-bar .icon { width: 13px; height: 13px; margin-left: 4px; }
+.image-size-toggle { padding: 5px 9px; border: 1px solid #d4c6e9; border-radius: 6px; background: #f7f3ff; color: var(--purple); font-size: 12px; white-space: nowrap; }
+.close-dialog { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 6px; background: #eee6f5; color: #72528a; font-size: 25px; line-height: 1; }
+.dialog-image-wrap { min-height: 0; max-height: calc(94dvh - 148px); overflow: auto; overscroll-behavior: contain; }
+.dialog-image-wrap > img { display: block; width: auto; height: auto; max-width: 100%; max-height: calc(94dvh - 148px); margin: 0 auto; }
+.image-dialog.is-original-size .dialog-image-wrap > img { max-width: none; max-height: none; margin: 0; }
+body.modal-open { overflow: hidden; }
+@media (min-width: 1600px) {
+  .content { padding-left: 42px; padding-right: 42px; }
+}
+@media (max-width: 1250px) {
+  :root { --sidebar: 204px; }
+  .content { padding: 20px 22px 0; }
+  .goal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1000px) and (min-width: 761px) {
+  .header-divider, .header-label { display: none; }
+  .header-links { gap: 20px; }
+  .content { padding: 18px 18px 0; }
+  .article-top { padding-left: 16px; padding-right: 16px; }
+  .help-strip-link { font-size: 0; gap: 0; }
+  .help-strip-link .icon { width: 19px; height: 19px; }
+  .goal-card { gap: 8px; }
+  .goal-card h3 { font-size: 13px; }
+}
+@media (max-width: 760px) {
+  :root { --header: 60px; --sidebar: 254px; }
+  html { scroll-padding-top: 76px; }
+  .header { padding: 0 14px; gap: 10px; }
+  .brand-name { font-size: 20px; gap: 8px; }
+  .brand-name > span { font-size: 13px; }
+  .brand-mark { width: 30px; height: 30px; }
+  .brand-mark svg { width: 27px; height: 27px; }
+  .header-divider, .header-label, .header-links { display: none; }
+  .menu-button { display: block; margin-left: auto; }
+  .sidebar { visibility: hidden; transform: translateX(-100%); transition: transform .18s ease; }
+  .sidebar.is-open { visibility: visible; transform: translateX(0); }
+  .sidebar-backdrop:not([hidden]) { position: fixed; inset: var(--header) 0 0; z-index: 24; display: block; border: 0; background: #25223966; }
+  .main { margin-left: 0; }
+  .content { padding: 17px 14px 0; }
+  .breadcrumb { font-size: 11px; gap: 8px; margin-bottom: 13px; }
+  .hero { padding: 11px 14px; margin-bottom: 11px; }
+  .hero h1 { font-size: 22px; }
+  .goals { padding: 9px 10px 0; border-radius: 9px; }
+  .section-heading { margin-bottom: 7px; }
+  .section-heading h2 { font-size: 17px; }
+  .goal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .goal-card { min-height: 38px; padding: 6px 7px; gap: 6px; justify-content: flex-start; }
+  .goal-card h3 { font-size: 13px; }
+  .goals .goal-icon { width: 20px; height: 20px; }
+  .goals .goal-icon .icon { width: 14px; height: 14px; }
+  .more-goals { gap: 5px 11px; font-size: 11px; padding: 6px 0; margin-top: 7px; }
+  .more-goals > span { display: none; }
+  .help-strip { padding: 11px 12px; gap: 9px; margin: 12px 0 18px; }
+  .help-strip strong { font-size: 12px; }
+  .help-strip-icon .icon { width: 20px; height: 20px; }
+  .help-strip-link { font-size: 0; gap: 0; }
+  .help-strip-link .icon { width: 17px; height: 17px; }
+  .guide-divider { font-size: 10px; gap: 8px; }
+  .guide-divider > span:first-child { font-size: 15px; flex-shrink: 0; }
+  .guide-section { margin-bottom: 12px; border-radius: 9px; }
+  .article-top { padding: 8px 12px; }
+  .article-top h2 { font-size: 17px; }
+  .back-goals { font-size: 0; }
+  .back-goals::after { content: "返回 ↑"; font-size: 11px; }
+  .article-intro { font-size: 14px; }
+  .gallery-controls { padding: 6px 8px; }
+  .gallery-controls button { width: 32px; height: 28px; }
+  .gallery-hint { font-size: 12px; }
+  .guide-section > .article-intro { margin: 9px 12px; }
+  .faq-list { margin: 0 14px 14px; }
+  .faq-list summary { padding: 10px 0; font-size: 14px; }
+  .faq-list details > div { padding-right: 0; font-size: 14px; }
+  .page-footer { padding: 5px 0 22px; font-size: 10px; }
+  .footer-brand { font-size: 13px; gap: 7px; }
+  .footer-brand > span { font-size: 10px; }
+  .back-top { right: 8px; bottom: 12px; width: 31px; height: 31px; }
+  .image-dialog { width: 96vw; border-radius: 9px; }
+  .dialog-bar { padding: 10px; gap: 8px; font-size: 12px; flex-wrap: wrap; }
+  .dialog-bar > p { width: 100%; }
+  .dialog-bar > div { justify-content: flex-end; gap: 12px; width: 100%; }
+  .dialog-bar a { font-size: 12px; }
+  .dialog-bar .icon { width: 13px; height: 13px; margin-left: 3px; }
+  .dialog-image-wrap { max-height: calc(94dvh - 190px); }
+  .dialog-image-wrap > img { max-height: calc(94dvh - 190px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html, .gallery-track { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+@media print {
+  .guide-grid { display: block; }
+  body { background: #fff; }
+  .header, .sidebar, .sidebar-backdrop, .back-goals, .back-top, .hero-visual, .help-strip, .image-dialog, .gallery-controls { display: none !important; }
+  .main { margin: 0; }
+  .content { max-width: none; padding: 0; }
+  .gallery-track { display: block; overflow: visible; }
+  .gallery { max-width: none; border: 0; }
+  .gallery-slide .image-button { aspect-ratio: auto; }
+  .gallery-slide .image-button > img { height: auto; }
+  .gallery-slide { break-inside: avoid; }
+  .guide-section { break-inside: auto; }
+}
+
+</style>
+  <meta name="guide-version" content="22">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-arrow" viewbox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"></path></symbol>
+    <symbol id="i-book" viewbox="0 0 24 24"><path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1m0-14c3-2 6-2 9-1v14c-3-1-6-1-9 1V6Z"></path></symbol>
+    <symbol id="i-login" viewbox="0 0 24 24"><path d="M14 4h5v16h-5M3 12h12m-5-5 5 5-5 5"></path></symbol>
+    <symbol id="i-add" viewbox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"></rect><path d="M12 8v8m-4-4h8"></path></symbol>
+    <symbol id="i-people" viewbox="0 0 24 24"><circle cx="9" cy="8" r="3"></circle><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v2"></path></symbol>
+    <symbol id="i-phone" viewbox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"></rect><path d="M10 5h4m-3 14h2"></path></symbol>
+    <symbol id="i-download" viewbox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 15v5h16v-5"></path></symbol>
+    <symbol id="i-filter" viewbox="0 0 24 24"><path d="M4 5h16l-6 7v7l-4 2v-9L4 5Z"></path></symbol>
+    <symbol id="i-chart" viewbox="0 0 24 24"><path d="M4 3v17h17M8 15l4-5 4 2 5-7"></path></symbol>
+    <symbol id="i-tune" viewbox="0 0 24 24"><path d="M4 7h8m4 0h4M4 17h3m4 0h9"></path><circle cx="14" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></symbol>
+    <symbol id="i-chat" viewbox="0 0 24 24"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a7 7 0 0 1-1-4V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3"></path><path d="M8 9h8m-8 4h5"></path></symbol>
+    <symbol id="i-help" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4m0 3v.1"></path></symbol>
+    <symbol id="i-external" viewbox="0 0 24 24"><path d="M14 4h6v6m0-6L10 14m-1-9H4v15h15v-5"></path></symbol>
+    <symbol id="i-up" viewbox="0 0 24 24"><path d="m6 14 6-6 6 6"></path></symbol>
+    <symbol id="i-check" viewbox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></symbol>
+    <symbol id="i-zoom" viewbox="0 0 24 24"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 5 5M7 10h6m-3-3v6"></path></symbol>
+  </svg>
+
+  <header class="header">
+    <a class="brand" href="#top" aria-label="多客数据中心操作指南首页">
+      <span class="brand-mark"><svg viewbox="0 0 32 32" aria-hidden="true"><path d="m8 6 9-2 6 5-9 9-6-5 8-8M8 19l9-9 7 5-9 12-7-1Z" fill="currentColor"></path></svg></span>
+      <span class="brand-name">多客<span>数据中心</span></span>
+    </a>
+    <span class="header-divider"></span><span class="header-label">帮助中心</span>
+    <nav class="header-links" aria-label="顶部导航">
+      <a class="current" href="#top">操作指南</a>
+      <a href="#faq">常见问题</a>
+      <a class="backend-link" href="https://vip.duoke.net/" target="_blank" rel="noopener noreferrer">进入数据中心<svg class="icon"><use href="#i-external"></use></svg></a>
+    </nav>
+    <button class="menu-button" aria-label="打开操作目录" aria-controls="sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
+  </header>
+
+  <button class="sidebar-backdrop" aria-label="关闭操作目录" hidden></button>
+  <aside class="sidebar" id="sidebar">
+    <a class="sidebar-home active" href="#top"><svg class="icon"><use href="#i-book"></use></svg>指南首页</a>
+    <nav aria-label="操作目录">
+      <p class="nav-label">开始使用</p>
+      <a href="#overview"><span>01</span>认识数据中心</a>
+      <a href="#login"><span>02</span>登录数据中心</a>
+      <a href="#subscribe"><span>03</span>添加报表或看板</a>
+      <p class="nav-label">权限与手机</p>
+      <a href="#visibility"><span>04</span>给员工开放查看权限</a>
+      <a href="#mobile"><span>05</span>在手机上查看</a>
+      <a href="#export-permission"><span>06</span>设置员工导出权限</a>
+      <p class="nav-label">查看与应用</p>
+      <a href="#reports"><span>07</span>查看与筛选报表</a>
+      <a href="#dashboards"><span>08</span>查看看板</a>
+      <a href="#export"><span>09</span>导出并下载 Excel</a>
+      <a href="#threshold"><span>10</span>设置预警阈值</a>
+      <a href="#wechat"><span>11</span>微信 AI 问一问</a>
+      <p class="nav-label">遇到问题</p>
+      <a href="#faq"><svg class="icon"><use href="#i-help"></use></svg>常见问题与自查</a>
+    </nav>
+    <div class="sidebar-tip"><span class="tip-dot"></span><strong>第一次使用？</strong><a href="#goals">选择我的目标 <span>→</span></a></div>
+    <p class="sidebar-footer">多客数据中心 · 使用指南</p>
+  </aside>
+
+  <main id="main" class="main">
+    <div class="content" id="top">
+      <div class="breadcrumb">帮助中心 <span>/</span> 数据中心 <span>/</span> <strong>操作指南</strong></div>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy"><h1 id="hero-title">数据中心操作指南</h1></div>
+      </section>
+
+      <section class="goals" id="goals" aria-labelledby="goals-title">
+        <div class="section-heading"><h2 id="goals-title">您想做什么？</h2></div>
+        <div class="goal-grid">
+          <a class="goal-card" href="#login"><span class="goal-icon violet"><svg class="icon"><use href="#i-login"></use></svg></span><h3>第一次用，想开始使用数据中心</h3></a>
+          <a class="goal-card" href="#mobile"><span class="goal-icon violet"><svg class="icon"><use href="#i-phone"></use></svg></span><h3>想把报表或看板放到手机上看</h3></a>
+          <a class="goal-card" href="#faq-mobile-view"><span class="goal-icon blue"><svg class="icon"><use href="#i-phone"></use></svg></span><h3>已设置好，员工怎么在手机上看？</h3></a>
+          <a class="goal-card" href="#visibility"><span class="goal-icon green"><svg class="icon"><use href="#i-people"></use></svg></span><h3>想把指定报表给店长或销售员看</h3></a>
+          <a class="goal-card" href="#dashboards"><span class="goal-icon violet"><svg class="icon"><use href="#i-chart"></use></svg></span><h3>想看经营趋势和排行</h3></a>
+          <a class="goal-card" href="#reports"><span class="goal-icon orange"><svg class="icon"><use href="#i-filter"></use></svg></span><h3>想查销售、库存等具体数据</h3></a>
+          <a class="goal-card" href="#export"><span class="goal-icon blue"><svg class="icon"><use href="#i-download"></use></svg></span><h3>想导出 Excel，用于对账或汇报</h3></a>
+          <a class="goal-card" href="#threshold"><span class="goal-icon orange"><svg class="icon"><use href="#i-tune"></use></svg></span><h3>想调整适合本店的预警标准</h3></a>
+          <a class="goal-card" href="#wechat"><span class="goal-icon green"><svg class="icon"><use href="#i-chat"></use></svg></span><h3>想在微信里问 AI 查数据</h3></a>
+        </div>
+        <div class="more-goals"><span>还想了解</span><a href="#subscribe">想添加新的报表或看板 <span>↗</span></a></div>
+      </section>
+      <a class="help-strip" href="#faq"><span class="help-strip-icon"><svg class="icon"><use href="#i-help"></use></svg></span><div><strong>遇到问题：找不到报表、手机不显示、无法导出？</strong></div><span class="help-strip-link">查看解决方法 <svg class="icon"><use href="#i-arrow"></use></svg></span></a>
+
+      <div class="guide-divider"><span>图文操作指南</span></div>
+
+      <div class="guide-grid">
+      <section class="guide-section" id="overview" aria-labelledby="overview-title">
+        <div class="article-top"><h2 id="overview-title">先认识数据中心</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery" role="region" aria-label="先认识数据中心操作图示">
+
+          <div class="gallery-track" id="gallery-overview" tabindex="0" aria-label="操作图片">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 1 张：认识顶部入口与看板列表"><button type="button" class="image-button" data-original="assets/screens/raw/overview-1.png" aria-label="放大：认识顶部入口与看板列表"><img src="assets/screens/overview-1.webp?v=16" alt="认识顶部入口与看板列表" width="2880" height="1800" loading="eager" fetchpriority="high" srcset="assets/screens/responsive/overview-1-720.webp?v=18 720w, assets/screens/responsive/overview-1-960.webp?v=18 960w, assets/screens/responsive/overview-1-1440.webp?v=18 1440w, assets/screens/overview-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="login" aria-labelledby="login-title">
+        <div class="article-top"><h2 id="login-title">登录数据中心</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery" role="region" aria-label="登录数据中心操作图示">
+
+          <div class="gallery-track" id="gallery-login" tabindex="0" aria-label="操作图片">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 1 张：打开网页并扫码登录"><button type="button" class="image-button" data-original="assets/screens/raw/login-1.png" aria-label="放大：打开网页并扫码登录"><img src="assets/screens/login-1.webp?v=16" alt="打开网页并扫码登录" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/login-1-720.webp?v=18 720w, assets/screens/responsive/login-1-960.webp?v=18 960w, assets/screens/responsive/login-1-1440.webp?v=18 1440w, assets/screens/login-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="subscribe" aria-labelledby="subscribe-title">
+        <div class="article-top"><h2 id="subscribe-title">添加报表或看板</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="添加报表或看板操作图示">
+
+          <div class="gallery-track" id="gallery-subscribe" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 2 张：从顶部进入模板市场"><button type="button" class="image-button" data-original="assets/screens/raw/subscribe-entry.png" aria-label="放大：从顶部进入模板市场"><img src="assets/screens/subscribe-entry.webp?v=16" alt="从顶部进入模板市场" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/subscribe-entry-720.webp?v=18 720w, assets/screens/responsive/subscribe-entry-960.webp?v=18 960w, assets/screens/responsive/subscribe-entry-1440.webp?v=18 1440w, assets/screens/subscribe-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 2 张：选择内容类型、搜索模板并订阅"><button type="button" class="image-button" data-original="assets/screens/raw/subscribe-1.png" aria-label="放大：选择内容类型、搜索模板并订阅"><img src="assets/screens/subscribe-1.webp?v=16" alt="选择内容类型、搜索模板并订阅" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/subscribe-1-720.webp?v=18 720w, assets/screens/responsive/subscribe-1-960.webp?v=18 960w, assets/screens/responsive/subscribe-1-1440.webp?v=18 1440w, assets/screens/subscribe-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-subscribe" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 2</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-subscribe"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="visibility" aria-labelledby="visibility-title">
+        <div class="article-top"><h2 id="visibility-title">给员工开放查看权限</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="给员工开放查看权限操作图示">
+
+          <div class="gallery-track" id="gallery-visibility" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 2 张：进入数据可见员工并找到授权入口"><button type="button" class="image-button" data-original="assets/screens/raw/visibility-entry.png" aria-label="放大：进入数据可见员工并找到授权入口"><img src="assets/screens/visibility-entry.webp?v=16" alt="进入数据可见员工并找到授权入口" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/visibility-entry-720.webp?v=18 720w, assets/screens/responsive/visibility-entry-960.webp?v=18 960w, assets/screens/responsive/visibility-entry-1440.webp?v=18 1440w, assets/screens/visibility-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 2 张：设置员工查看权限并提交"><button type="button" class="image-button" data-original="assets/screens/raw/visibility-1.png" aria-label="放大：设置员工查看权限并提交"><img src="assets/screens/visibility-1.webp?v=16" alt="设置员工查看权限并提交" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/visibility-1-720.webp?v=18 720w, assets/screens/responsive/visibility-1-960.webp?v=18 960w, assets/screens/responsive/visibility-1-1440.webp?v=18 1440w, assets/screens/visibility-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-visibility" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 2</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-visibility"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="mobile" aria-labelledby="mobile-title">
+        <div class="article-top"><h2 id="mobile-title">在手机上查看数据</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="在手机上查看数据操作图示">
+
+          <div class="gallery-track" id="gallery-mobile" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 3 张：从更多进入数据可见员工并找到目标内容"><button type="button" class="image-button" data-original="assets/screens/raw/mobile-entry.png" aria-label="放大：从更多进入数据可见员工并找到目标内容"><img src="assets/screens/mobile-entry.webp?v=16" alt="从更多进入数据可见员工并找到目标内容" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/mobile-entry-720.webp?v=18 720w, assets/screens/responsive/mobile-entry-960.webp?v=18 960w, assets/screens/responsive/mobile-entry-1440.webp?v=18 1440w, assets/screens/mobile-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 3 张：开启手机显示并进入员工授权"><button type="button" class="image-button" data-original="assets/screens/raw/mobile-1.png" aria-label="放大：开启手机显示并进入员工授权"><img src="assets/screens/mobile-1.webp?v=16" alt="开启手机显示并进入员工授权" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/mobile-1-720.webp?v=18 720w, assets/screens/responsive/mobile-1-960.webp?v=18 960w, assets/screens/responsive/mobile-1-1440.webp?v=18 1440w, assets/screens/mobile-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 3 张，共 3 张：选择可见员工并提交"><button type="button" class="image-button" data-original="assets/screens/raw/mobile-visibility.png" aria-label="放大：选择可见员工并提交"><img src="assets/screens/mobile-visibility.webp?v=16" alt="选择可见员工并提交" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/mobile-visibility-720.webp?v=18 720w, assets/screens/responsive/mobile-visibility-960.webp?v=18 960w, assets/screens/responsive/mobile-visibility-1440.webp?v=18 1440w, assets/screens/mobile-visibility.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-mobile" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 3</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-mobile"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="export-permission" aria-labelledby="export-permission-title">
+        <div class="article-top"><h2 id="export-permission-title">设置员工导出权限</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="设置员工导出权限操作图示">
+
+          <div class="gallery-track" id="gallery-export-permission" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 2 张：进入数据可见员工并找到导出授权入口"><button type="button" class="image-button" data-original="assets/screens/raw/export-permission-entry.png" aria-label="放大：进入数据可见员工并找到导出授权入口"><img src="assets/screens/export-permission-entry.webp?v=16" alt="进入数据可见员工并找到导出授权入口" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/export-permission-entry-720.webp?v=18 720w, assets/screens/responsive/export-permission-entry-960.webp?v=18 960w, assets/screens/responsive/export-permission-entry-1440.webp?v=18 1440w, assets/screens/export-permission-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 2 张：查看导出权限与当前系统限制"><button type="button" class="image-button" data-original="assets/screens/raw/export-permission-1.png" aria-label="放大：查看导出权限与当前系统限制"><img src="assets/screens/export-permission-1.webp?v=16" alt="查看导出权限与当前系统限制" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/export-permission-1-720.webp?v=18 720w, assets/screens/responsive/export-permission-1-960.webp?v=18 960w, assets/screens/responsive/export-permission-1-1440.webp?v=18 1440w, assets/screens/export-permission-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-export-permission" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 2</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-export-permission"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="reports" aria-labelledby="reports-title">
+        <div class="article-top"><h2 id="reports-title">查看与筛选报表</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="查看与筛选报表操作图示">
+
+          <div class="gallery-track" id="gallery-reports" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 3 张：从顶部报表进入并选择报表"><button type="button" class="image-button" data-original="assets/screens/raw/reports-1.png" aria-label="放大：从顶部报表进入并选择报表"><img src="assets/screens/reports-1.webp?v=16" alt="从顶部报表进入并选择报表" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/reports-1-720.webp?v=18 720w, assets/screens/responsive/reports-1-960.webp?v=18 960w, assets/screens/responsive/reports-1-1440.webp?v=18 1440w, assets/screens/reports-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 3 张：按条件筛选数据"><button type="button" class="image-button" data-original="assets/screens/raw/reports-2.png" aria-label="放大：按条件筛选数据"><img src="assets/screens/reports-2.webp?v=16" alt="按条件筛选数据" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/reports-2-720.webp?v=18 720w, assets/screens/responsive/reports-2-960.webp?v=18 960w, assets/screens/responsive/reports-2-1440.webp?v=18 1440w, assets/screens/reports-2.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 3 张，共 3 张：管理显示列与排序"><button type="button" class="image-button" data-original="assets/screens/raw/reports-3.png" aria-label="放大：管理显示列与排序"><img src="assets/screens/reports-3.webp?v=16" alt="管理显示列与排序" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/reports-3-720.webp?v=18 720w, assets/screens/responsive/reports-3-960.webp?v=18 960w, assets/screens/responsive/reports-3-1440.webp?v=18 1440w, assets/screens/reports-3.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-reports" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 3</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-reports"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="dashboards" aria-labelledby="dashboards-title">
+        <div class="article-top"><h2 id="dashboards-title">查看经营看板</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="查看经营看板操作图示">
+
+          <div class="gallery-track" id="gallery-dashboards" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 2 张：从顶部看板选择并打开看板"><button type="button" class="image-button" data-original="assets/screens/raw/dashboards-entry.png" aria-label="放大：从顶部看板选择并打开看板"><img src="assets/screens/dashboards-entry.webp?v=16" alt="从顶部看板选择并打开看板" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/dashboards-entry-720.webp?v=18 720w, assets/screens/responsive/dashboards-entry-960.webp?v=18 960w, assets/screens/responsive/dashboards-entry-1440.webp?v=18 1440w, assets/screens/dashboards-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 2 张：选择日期和店铺并应用"><button type="button" class="image-button" data-original="assets/screens/raw/dashboards-1.png" aria-label="放大：选择日期和店铺并应用"><img src="assets/screens/dashboards-1.webp?v=16" alt="选择日期和店铺并应用" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/dashboards-1-720.webp?v=18 720w, assets/screens/responsive/dashboards-1-960.webp?v=18 960w, assets/screens/responsive/dashboards-1-1440.webp?v=18 1440w, assets/screens/dashboards-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-dashboards" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 2</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-dashboards"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="export" aria-labelledby="export-title">
+        <div class="article-top"><h2 id="export-title">导出并下载 Excel</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="导出并下载 Excel操作图示">
+
+          <div class="gallery-track" id="gallery-export" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 4 张：从顶部报表进入需要导出的报表"><button type="button" class="image-button" data-original="assets/screens/raw/reports-1.png" aria-label="放大：从顶部报表进入需要导出的报表"><img src="assets/screens/reports-1.webp?v=16" alt="从顶部报表进入需要导出的报表" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/reports-1-720.webp?v=18 720w, assets/screens/responsive/reports-1-960.webp?v=18 960w, assets/screens/responsive/reports-1-1440.webp?v=18 1440w, assets/screens/reports-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 4 张：检查查询条件并发起Excel导出"><button type="button" class="image-button" data-original="assets/screens/raw/export-1.png" aria-label="放大：检查查询条件并发起Excel导出"><img src="assets/screens/export-1.webp?v=16" alt="检查查询条件并发起Excel导出" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/export-1-720.webp?v=18 720w, assets/screens/responsive/export-1-960.webp?v=18 960w, assets/screens/responsive/export-1-1440.webp?v=18 1440w, assets/screens/export-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 3 张，共 4 张：从头像菜单进入导出任务"><button type="button" class="image-button" data-original="assets/screens/raw/export-tasks-entry.png" aria-label="放大：从头像菜单进入导出任务"><img src="assets/screens/export-tasks-entry.webp?v=16" alt="从头像菜单进入导出任务" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/export-tasks-entry-720.webp?v=18 720w, assets/screens/responsive/export-tasks-entry-960.webp?v=18 960w, assets/screens/responsive/export-tasks-entry-1440.webp?v=18 1440w, assets/screens/export-tasks-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 4 张，共 4 张：等待完成并下载文件"><button type="button" class="image-button" data-original="assets/screens/raw/export-2.png" aria-label="放大：等待完成并下载文件"><img src="assets/screens/export-2.webp?v=16" alt="等待完成并下载文件" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/export-2-720.webp?v=18 720w, assets/screens/responsive/export-2-960.webp?v=18 960w, assets/screens/responsive/export-2-1440.webp?v=18 1440w, assets/screens/export-2.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-export" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 4</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-export"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="threshold" aria-labelledby="threshold-title">
+        <div class="article-top"><h2 id="threshold-title">设置预警阈值</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="设置预警阈值操作图示">
+
+          <div class="gallery-track" id="gallery-threshold" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 2 张：从更多进入阈值设置"><button type="button" class="image-button" data-original="assets/screens/raw/threshold-entry.png" aria-label="放大：从更多进入阈值设置"><img src="assets/screens/threshold-entry.webp?v=16" alt="从更多进入阈值设置" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/threshold-entry-720.webp?v=18 720w, assets/screens/responsive/threshold-entry-960.webp?v=18 960w, assets/screens/responsive/threshold-entry-1440.webp?v=18 1440w, assets/screens/threshold-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 2 张：确认作用范围并修改阈值"><button type="button" class="image-button" data-original="assets/screens/raw/threshold-1.png" aria-label="放大：确认作用范围并修改阈值"><img src="assets/screens/threshold-1.webp?v=16" alt="确认作用范围并修改阈值" width="3840" height="2400" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/threshold-1-720.webp?v=18 720w, assets/screens/responsive/threshold-1-960.webp?v=18 960w, assets/screens/responsive/threshold-1-1440.webp?v=18 1440w, assets/screens/threshold-1.webp?v=16 3840w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-threshold" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 2</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-threshold"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section" id="wechat" aria-labelledby="wechat-title">
+        <div class="article-top"><h2 id="wechat-title">微信 AI 问一问</h2><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <div class="gallery multi-image" role="region" aria-label="微信 AI 问一问操作图示">
+
+          <div class="gallery-track" id="gallery-wechat" tabindex="0" aria-label="操作图片，可左右滑动或按左右方向键切换">
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 1 张，共 2 张：从右上角头像菜单进入微信AI"><button type="button" class="image-button" data-original="assets/screens/raw/wechat-entry.png" aria-label="放大：从右上角头像菜单进入微信AI"><img src="assets/screens/wechat-entry.webp?v=16" alt="从右上角头像菜单进入微信AI" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/wechat-entry-720.webp?v=18 720w, assets/screens/responsive/wechat-entry-960.webp?v=18 960w, assets/screens/responsive/wechat-entry-1440.webp?v=18 1440w, assets/screens/wechat-entry.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+            <figure class="gallery-slide" role="group" aria-roledescription="图片" aria-label="第 2 张，共 2 张：扫码绑定或更换微信"><button type="button" class="image-button" data-original="assets/screens/raw/wechat-1.png" aria-label="放大：扫码绑定或更换微信"><img src="assets/screens/wechat-1.webp?v=16" alt="扫码绑定或更换微信" width="2880" height="1800" loading="lazy" fetchpriority="low" srcset="assets/screens/responsive/wechat-1-720.webp?v=18 720w, assets/screens/responsive/wechat-1-960.webp?v=18 960w, assets/screens/responsive/wechat-1-1440.webp?v=18 1440w, assets/screens/wechat-1.webp?v=16 2880w" sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1000px) calc(100vw - 242px), (max-width: 1250px) calc(100vw - 250px), (max-width: 1535px) calc(100vw - 278px), (max-width: 1599px) 1258px, 1234px"></button></figure>
+          </div>
+          <div class="gallery-controls"><button type="button" class="gallery-prev" aria-label="上一张操作图片" aria-controls="gallery-wechat" disabled><svg class="icon"><use href="#i-arrow"></use></svg></button><span class="gallery-status" aria-live="polite">1 / 2</span><span class="gallery-hint">左右滑动查看</span><button type="button" class="gallery-next" aria-label="下一张操作图片" aria-controls="gallery-wechat"><svg class="icon"><use href="#i-arrow"></use></svg></button></div>
+        </div>
+      </section>
+
+      <section class="guide-section faq-section" id="faq" aria-labelledby="faq-title">
+        <div class="article-top"><div><h2 id="faq-title">常见问题，先这样检查</h2></div><a class="back-goals" href="#goals">返回目标选择 ↑</a></div>
+        <p class="article-intro">涉及权限的设置，请联系公司超管或管理员协助。</p>
+        <div class="faq-list">
+          <details id="faq-mobile-view" open><summary>已设置好，员工怎么在手机上看数据？<span>＋</span></summary><div><p>在手机上打开多客黑端或红端，进入“更多 → 数据中心”，选择“看板”或“报表”，点击要查看的内容。如果找不到，请联系管理员检查手机显示和员工查看权限。</p><a href="#mobile">查看管理员设置方法 →</a></div></details>
+          <details id="faq-missing" open><summary>找不到需要的报表或看板<span>＋</span></summary><div><p>先确认进入的是“报表”还是“看板”。如果列表里没有需要的内容，请管理员到“模板市场”搜索并订阅，再为您开放查看权限。</p><a href="#subscribe">查看添加步骤 →</a></div></details>
+          <details id="faq-mobile" open><summary>电脑能看到，手机上找不到<span>＋</span></summary><div><p>请管理员在“更多 → 数据可见员工”中找到对应内容，打开“移动端是否可见”，并确认您在可见员工名单中。设置后，重新进入手机端查看。</p><a href="#mobile">查看手机设置步骤 →</a></div></details>
+          <details id="faq-account" open><summary>管理员能看到，我的账号看不到<span>＋</span></summary><div><p>请管理员点击目标内容的“编辑可见员工”。如果只开放给部分员工，需关闭“全部员工可见”，点击“选择”勾选您，再完成选择并提交。</p><a href="#visibility">查看员工授权步骤 →</a></div></details>
+          <details id="faq-empty" open><summary>报表能打开，但没有数据<span>＋</span></summary><div><p>检查搜索框是否保留关键词，再确认日期、店铺等筛选条件。调整后点击“应用”或“应用筛选”。如果仍为空，请将报表名称和筛选条件截图发给顾问协助检查。</p><a href="#reports">查看筛选操作 →</a></div></details>
+          <details id="faq-export" open><summary>能查看报表，但无法导出 Excel<span>＋</span></summary><div><p>查看与导出需要分别授权，请管理员检查导出权限。具体可导出的内容，以账号当前权限为准。</p><a href="#export-permission">查看导出权限说明 →</a></div></details>
+          <details id="faq-refresh" open><summary>已经设置权限，还是找不到<span>＋</span></summary><div><p>确认登录的是被授权的员工账号，查找的是同一张报表或看板，再刷新或重新进入页面。仍未解决时，请准备报表名称、登录账号和问题截图，联系顾问或在线客服。</p></div></details>
+        </div>
+
+      </section>
+      </div>
+      <footer class="page-footer"><a class="footer-brand" href="#top">多客<span>数据中心操作指南</span></a><a href="#top">回到顶部 ↑</a></footer>
+    </div>
+  </main>
+  <a class="back-top" href="#top" aria-label="回到顶部" title="回到顶部"><svg class="icon"><use href="#i-up"></use></svg></a>
+  <dialog class="image-dialog" aria-labelledby="image-caption"><div class="dialog-bar"><p id="image-caption">操作截图</p><div><button type="button" class="image-size-toggle" aria-controls="enlarged-image">原始尺寸</button><a id="original-image" target="_blank" rel="noopener noreferrer">查看原图 <svg class="icon"><use href="#i-external"></use></svg></a><button type="button" class="close-dialog" aria-label="关闭截图" autofocus>×</button></div></div><div class="dialog-image-wrap" tabindex="0" aria-label="截图查看区，可滚动查看原始尺寸图片"><img id="enlarged-image" alt=""></div></dialog>
+<script>
+const menuButton = document.querySelector('.menu-button');
+const sidebar = document.querySelector('.sidebar');
+const backdrop = document.querySelector('.sidebar-backdrop');
+
+function closeMenu() {
+  menuButton.setAttribute('aria-expanded', 'false');
+  menuButton.setAttribute('aria-label', '打开操作目录');
+  sidebar.classList.remove('is-open');
+  backdrop.hidden = true;
+}
+
+menuButton.addEventListener('click', () => {
+  const open = menuButton.getAttribute('aria-expanded') !== 'true';
+  menuButton.setAttribute('aria-expanded', String(open));
+  menuButton.setAttribute('aria-label', open ? '关闭操作目录' : '打开操作目录');
+  sidebar.classList.toggle('is-open', open);
+  backdrop.hidden = !open;
+});
+backdrop.addEventListener('click', closeMenu);
+sidebar.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+    closeMenu();
+    menuButton.focus();
+  }
+});
+window.matchMedia('(min-width: 761px)').addEventListener('change', event => {
+  if (event.matches) closeMenu();
+});
+
+function loadGuideImage(image, priority = 'high') {
+  if (priority === 'high') {
+    document.querySelectorAll('.gallery img[fetchpriority="high"]').forEach(other => {
+      if (other !== image) other.fetchPriority = 'auto';
+    });
+  }
+  image.fetchPriority = priority;
+  image.loading = 'eager';
+}
+
+function preloadGallery(gallery, priority = 'auto') {
+  const track = gallery.querySelector('.gallery-track');
+  const images = [...track.querySelectorAll('img')];
+  const index = Math.max(0, Math.min(images.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+  loadGuideImage(images[index], priority);
+  images.forEach((image, imageIndex) => {
+    if (imageIndex !== index) loadGuideImage(image, 'low');
+  });
+}
+
+const galleryObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    preloadGallery(entry.target);
+    galleryObserver.unobserve(entry.target);
+  });
+}, { rootMargin: '600px 0px' });
+document.querySelectorAll('.gallery').forEach(gallery => galleryObserver.observe(gallery));
+
+function openGuideTarget(hash) {
+  const target = document.getElementById(hash.slice(1));
+  if (target?.matches('.faq-list details')) target.open = true;
+  const gallery = target?.querySelector('.gallery');
+  if (gallery) {
+    preloadGallery(gallery, 'high');
+    galleryObserver.unobserve(gallery);
+  }
+}
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', () => openGuideTarget(link.hash));
+});
+window.addEventListener('hashchange', () => openGuideTarget(location.hash));
+openGuideTarget(location.hash);
+
+const navLinks = [...sidebar.querySelectorAll('.sidebar-home, nav a[href^="#"]')];
+const navTargets = navLinks.map(link => document.querySelector(link.hash));
+let scrollScheduled = false;
+
+function updateActiveLink() {
+  let activeIndex = 0;
+  navTargets.forEach((section, index) => {
+    if (section.getBoundingClientRect().top <= 115) activeIndex = index;
+  });
+  navLinks.forEach((link, index) => {
+    link.classList.toggle('active', index === activeIndex);
+    if (index === activeIndex) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+  scrollScheduled = false;
+}
+
+window.addEventListener('scroll', () => {
+  if (scrollScheduled) return;
+  scrollScheduled = true;
+  requestAnimationFrame(updateActiveLink);
+}, { passive: true });
+window.addEventListener('hashchange', () => requestAnimationFrame(updateActiveLink));
+window.addEventListener('resize', () => requestAnimationFrame(updateActiveLink));
+window.addEventListener('load', updateActiveLink);
+updateActiveLink();
+
+document.querySelectorAll('.multi-image').forEach(gallery => {
+  const track = gallery.querySelector('.gallery-track');
+  const slides = [...track.children];
+  const previous = gallery.querySelector('.gallery-prev');
+  const next = gallery.querySelector('.gallery-next');
+  const status = gallery.querySelector('.gallery-status');
+
+  function currentIndex() {
+    return Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+  }
+
+  function showImage(index) {
+    const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
+    loadGuideImage(slides[nextIndex].querySelector('img'));
+    if (track.contains(document.activeElement) && document.activeElement !== track) track.focus({ preventScroll: true });
+    track.scrollTo({ left: nextIndex * track.clientWidth });
+  }
+
+  function updateGallery() {
+    const index = currentIndex();
+    const currentButton = slides[index].querySelector('.image-button');
+    if (track.contains(document.activeElement) && document.activeElement !== track && document.activeElement !== currentButton) {
+      track.focus({ preventScroll: true });
+    }
+    previous.disabled = index === 0;
+    next.disabled = index === slides.length - 1;
+    const count = `${index + 1} / ${slides.length}`;
+    if (status.textContent !== count) status.textContent = count;
+    slides.forEach((slide, slideIndex) => {
+      slide.querySelector('.image-button').tabIndex = slideIndex === index ? 0 : -1;
+    });
+  }
+
+  previous.addEventListener('click', () => showImage(currentIndex() - 1));
+  next.addEventListener('click', () => showImage(currentIndex() + 1));
+  track.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const index = currentIndex();
+    if (event.key === 'ArrowLeft' && index > 0) showImage(index - 1);
+    if (event.key === 'ArrowRight' && index < slides.length - 1) showImage(index + 1);
+    if (event.key === 'Home') showImage(0);
+    if (event.key === 'End') showImage(slides.length - 1);
+  });
+  track.addEventListener('scroll', () => {
+    loadGuideImage(slides[currentIndex()].querySelector('img'));
+    updateGallery();
+  }, { passive: true });
+  new ResizeObserver(updateGallery).observe(track);
+  updateGallery();
+});
+
+const imageDialog = document.querySelector('.image-dialog');
+const enlargedImage = document.querySelector('#enlarged-image');
+const imageCaption = document.querySelector('#image-caption');
+const originalImage = document.querySelector('#original-image');
+const imageSizeToggle = document.querySelector('.image-size-toggle');
+const dialogImageWrap = document.querySelector('.dialog-image-wrap');
+
+function setOriginalSize(originalSize) {
+  imageDialog.classList.toggle('is-original-size', originalSize);
+  imageSizeToggle.textContent = originalSize ? '适合窗口' : '原始尺寸';
+  dialogImageWrap.scrollTo(0, 0);
+}
+
+imageSizeToggle.addEventListener('click', () => {
+  setOriginalSize(!imageDialog.classList.contains('is-original-size'));
+});
+
+document.querySelectorAll('.image-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const image = button.querySelector('img');
+    loadGuideImage(image);
+    enlargedImage.src = image.src;
+    enlargedImage.alt = image.alt;
+    imageCaption.textContent = image.alt;
+    originalImage.href = button.dataset.original;
+    setOriginalSize(false);
+    document.body.classList.add('modal-open');
+    imageDialog.showModal();
+  });
+});
+document.querySelector('.close-dialog').addEventListener('click', () => imageDialog.close());
+imageDialog.addEventListener('click', event => {
+  if (event.target !== imageDialog) return;
+  const rect = imageDialog.getBoundingClientRect();
+  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) imageDialog.close();
+});
+imageDialog.addEventListener('close', () => document.body.classList.remove('modal-open'));
+
+</script>
+</body>
+</html>
