@@ -47,16 +47,6 @@ function loadGuideImage(image) {
   preloadGallery(image.closest('.gallery'), 'high');
 }
 
-// Read ahead one image at a time while the visitor reads the current section.
-window.addEventListener('load', async () => {
-  for (const image of document.querySelectorAll('.gallery img')) {
-    if (image.complete && image.naturalWidth > 0) continue;
-    if (image.closest('.gallery') !== activeGallery) image.fetchPriority = 'low';
-    image.loading = 'eager';
-    await image.decode();
-  }
-}, { once: true });
-
 const galleryObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
